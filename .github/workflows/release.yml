@@ -47,12 +47,9 @@ jobs:
         run: npm run icons
 
       - name: Build
-        # The npm scripts already pass --publish never. Do NOT add the flag here
-        # as well: electron-builder would then see --publish twice, parse it as
-        # the array ["never","never"], and its guard `publish !== "never"` would
-        # evaluate true -- turning publishing ON and failing the build with
-        # "GitHub Personal Access Token is not set".
-        run: npm run ${{ matrix.script }}
+        # --publish never keeps electron-builder from trying to upload on its own;
+        # the release step below is the single source of truth for artifacts.
+        run: npm run ${{ matrix.script }} -- --publish never
         env:
           # Nothing is code-signed: no Apple Developer account, and no Windows
           # certificate. Set CSC_IDENTITY_AUTO_DISCOVERY=false so electron-builder
@@ -94,22 +91,11 @@ jobs:
           draft: ${{ inputs.draft || false }}
           generate_release_notes: true
           body: |
-            Pick the file for your platform from the assets below.
+            Download the build for your platform below.
 
-            | Platform | File | Notes |
-            |---|---|---|
-            | Windows | `...-Setup-<version>.exe` | Installer. Per-user, no admin rights needed. |
-            | Windows | `...-Portable-<version>.exe` | Single file, no installation. |
-            | macOS | `...-arm64.dmg` | Apple Silicon (M-series). |
-            | macOS | `...-<version>.dmg` | Intel. |
+            **Windows** — run the `Setup` installer, or use the `Portable` build for a
+            single file with no installation.
 
-            Not sure which Mac you have? Apple menu → About This Mac. If the window
-            shows a **Chip** line (an M-series chip), take the `arm64` build. If it
-            shows a **Processor** line naming an Intel Core, take the other one.
-
-            **macOS first launch** — these builds are **not code-signed or notarised**,
-            so macOS refuses to open the app the first time. Drag it to `/Applications`,
-            then **right-click the app → Open** and confirm. Only needed once.
-
-            **Windows SmartScreen** — the installer is unsigned, so you may see
-            "Windows protected your PC". Choose *More info* → *Run anyway*.
+            **macOS** — these builds are **not code-signed or notarised**, so macOS will
+            refuse to open the app the first time. After dragging it to `/Applications`,
+            **right-click the app → Open** and confirm. This is only needed once.
