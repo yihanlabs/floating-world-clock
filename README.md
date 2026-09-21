@@ -1,4 +1,4 @@
-# Floating World Clock
+# Desktop Clock
 
 A lightweight, always-on-top desktop world clock. Pick the time zones you care about and
 keep them visible in a small floating window that gets out of the way of your work.
@@ -8,9 +8,9 @@ runtime dependencies**. All time-zone maths uses the built-in `Intl` API, and th
 UI is a few hundred lines of vanilla code.
 
 <p align="center">
-  <img src="docs/screenshot-resting.png" width="300" alt="Floating World Clock showing Shanghai and Los Angeles">
+  <img src="docs/screenshot-resting.png" width="300" alt="Desktop Clock showing Shanghai and Los Angeles">
   &nbsp;&nbsp;
-  <img src="docs/screenshot-settings.png" width="300" alt="Floating World Clock settings panel">
+  <img src="docs/screenshot-settings.png" width="300" alt="Desktop Clock settings panel">
 </p>
 
 ## Features
@@ -35,14 +35,14 @@ UI is a few hundred lines of vanilla code.
 
 ## Download
 
-Grab the latest build from the [**Releases**](https://github.com/yihanlabs/floating-world-clock/releases) page.
+Grab the latest build from the [**Releases**](https://github.com/xuyihan0207/desktop-clock/releases) page.
 
 | Platform | File | Notes |
 |---|---|---|
-| Windows | `Floating World Clock-Setup-1.0.0.exe` | Installer. Per-user, no admin rights needed. |
-| Windows | `Floating World Clock-Portable-1.0.0.exe` | Single file, no installation. |
-| macOS | `Floating World Clock-1.0.0-arm64.dmg` | Apple Silicon (M-series). |
-| macOS | `Floating World Clock-1.0.0-x64.dmg` | Intel. |
+| Windows | `Desktop Clock-Setup-1.0.0.exe` | Installer. Per-user, no admin rights needed. |
+| Windows | `Desktop Clock-Portable-1.0.0.exe` | Single file, no installation. |
+| macOS | `Desktop Clock-1.0.0-arm64.dmg` | Apple Silicon (M-series). |
+| macOS | `Desktop Clock-1.0.0-x64.dmg` | Intel. |
 
 ### macOS: first launch
 
@@ -51,7 +51,7 @@ Developer account). macOS will refuse to open the app on the first attempt. To r
 
 1. Drag the app to `/Applications`.
 2. **Right-click the app → Open**, then confirm in the dialog.
-   (Or run `xattr -dr com.apple.quarantine "/Applications/Floating World Clock.app"`.)
+   (Or run `xattr -dr com.apple.quarantine "/Applications/Desktop Clock.app"`.)
 
 This only needs to be done once.
 
