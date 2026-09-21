@@ -94,11 +94,22 @@ jobs:
           draft: ${{ inputs.draft || false }}
           generate_release_notes: true
           body: |
-            Download the build for your platform below.
+            Pick the file for your platform from the assets below.
 
-            **Windows** — run the `Setup` installer, or use the `Portable` build for a
-            single file with no installation.
+            | Platform | File | Notes |
+            |---|---|---|
+            | Windows | `...-Setup-<version>.exe` | Installer. Per-user, no admin rights needed. |
+            | Windows | `...-Portable-<version>.exe` | Single file, no installation. |
+            | macOS | `...-arm64.dmg` | Apple Silicon (M-series). |
+            | macOS | `...-<version>.dmg` | Intel. |
 
-            **macOS** — these builds are **not code-signed or notarised**, so macOS will
-            refuse to open the app the first time. After dragging it to `/Applications`,
-            **right-click the app → Open** and confirm. This is only needed once.
+            Not sure which Mac you have? Apple menu → About This Mac. If the window
+            shows a **Chip** line (an M-series chip), take the `arm64` build. If it
+            shows a **Processor** line naming an Intel Core, take the other one.
+
+            **macOS first launch** — these builds are **not code-signed or notarised**,
+            so macOS refuses to open the app the first time. Drag it to `/Applications`,
+            then **right-click the app → Open** and confirm. Only needed once.
+
+            **Windows SmartScreen** — the installer is unsigned, so you may see
+            "Windows protected your PC". Choose *More info* → *Run anyway*.
