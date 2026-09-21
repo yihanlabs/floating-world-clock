@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Desktop Clock -- main process.
+ * Floating World Clock -- main process.
  *
  * Responsibilities: single-instance guard, the always-on-top frameless window,
  * content-driven sizing, the minute ticker, tray, auto-launch and IPC.
@@ -180,7 +180,7 @@ function createWindow(state) {
     skipTaskbar: true,
     alwaysOnTop: state.alwaysOnTop,
     show: false,
-    title: 'Desktop Clock',
+    title: 'Floating World Clock',
     webPreferences: {
       preload: PRELOAD_PATH,
       contextIsolation: true,
