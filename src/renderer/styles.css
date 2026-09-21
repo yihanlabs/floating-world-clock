@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Floating World Clock -- light "research report" surface.
+   Desktop Clock -- light "research report" surface.
    The window itself is transparent and frameless: the rounded card, its border
    and its shadow are all drawn here, and .stage's padding reserves room so the
    shadow is not clipped by the window edge.
