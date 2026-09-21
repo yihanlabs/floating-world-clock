@@ -39,10 +39,14 @@ Grab the latest build from the [**Releases**](https://github.com/yihanlabs/float
 
 | Platform | File | Notes |
 |---|---|---|
-| Windows | `Floating World Clock-Setup-1.0.0.exe` | Installer. Per-user, no admin rights needed. |
-| Windows | `Floating World Clock-Portable-1.0.0.exe` | Single file, no installation. |
-| macOS | `Floating World Clock-1.0.0-arm64.dmg` | Apple Silicon (M-series). |
-| macOS | `Floating World Clock-1.0.0-x64.dmg` | Intel. |
+| Windows | `Floating.World.Clock-Setup-1.0.0.exe` | Installer. Per-user, no admin rights needed. |
+| Windows | `Floating.World.Clock-Portable-1.0.0.exe` | Single file, no installation. |
+| macOS | `Floating.World.Clock-1.0.0-arm64.dmg` | Apple Silicon (M-series). |
+| macOS | `Floating.World.Clock-1.0.0.dmg` | Intel. |
+
+> File names use dots rather than spaces because GitHub rewrites spaces in
+> release assets. Locally the files are built with spaces, e.g.
+> `Floating World Clock-Setup-1.0.0.exe`.
 
 ### macOS: first launch
 
