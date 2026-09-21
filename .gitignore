@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Generated icon intermediates -- build/icon.png is committed because the macOS
+# build on CI derives the .icns from it.
+build/*.ico
+build/*.icns
+build/*.iconset/
+build/*-*.png
+!build/icon.png
+
+# Agent working files (session memory, verification scratch space)
+.workbuddy-ai/
+.verify/
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log*

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>Desktop Clock</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="stage">
+      <div class="card" id="card">
+        <header class="grip">
+          <span class="grip-title">World Clock</span>
+          <button
+            type="button"
+            class="icon-btn"
+            id="settingsBtn"
+            title="设置"
+            aria-label="设置"
+            aria-expanded="false"
+          >
+            <svg
+              class="ico-gear"
+              viewBox="0 0 24 24"
+              width="13"
+              height="13"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+              />
+            </svg>
+            <svg
+              class="ico-close"
+              viewBox="0 0 24 24"
+              width="13"
+              height="13"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </header>
+
+        <main class="zones" id="zoneList"></main>
+
+        <p class="empty" id="emptyState" hidden>
+          还没有时区<span class="empty-hint">点右上角齿轮添加</span>
+        </p>
+
+        <section class="panel" id="panel" hidden>
+          <div class="field">
+            <input
+              type="text"
+              id="searchInput"
+              class="search"
+              placeholder="搜索城市或时区，如 上海 / Tokyo / FRA"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <div class="results" id="searchResults" hidden></div>
+          </div>
+
+          <div class="chips" id="presetChips"></div>
+
+          <div class="section">
+            <div class="section-label">已选时区</div>
+            <div class="manage" id="manageList"></div>
+          </div>
+
+          <div class="section">
+            <div class="section-label">显示</div>
+            <div class="row-toggle">
+              <span>始终置顶</span>
+              <button
+                type="button"
+                class="switch"
+                id="toggleOnTop"
+                role="switch"
+                aria-checked="true"
+                aria-label="始终置顶"
+              ></button>
+            </div>
+            <div class="row-toggle">
+              <span>开机自动启动</span>
+              <button
+                type="button"
+                class="switch"
+                id="toggleAutoLaunch"
+                role="switch"
+                aria-checked="false"
+                aria-label="开机自动启动"
+              ></button>
+            </div>
+            <div class="row-toggle">
+              <span>行距</span>
+              <div class="seg" id="densitySeg">
+                <button type="button" data-density="compact">紧凑</button>
+                <button type="button" data-density="comfortable">宽松</button>
+              </div>
+            </div>
+            <div class="row-toggle">
+              <span>不透明度</span>
+              <input
+                type="range"
+                id="opacityRange"
+                min="30"
+                max="100"
+                step="1"
+                value="100"
+                aria-label="不透明度"
+              />
+              <output id="opacityValue" for="opacityRange">100%</output>
+            </div>
+          </div>
+
+          <div class="section actions">
+            <button type="button" class="ghost" id="resetBtn">重置位置</button>
+            <button type="button" class="ghost danger" id="quitBtn">退出</button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="zones.js"></script>
+    <script src="format.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

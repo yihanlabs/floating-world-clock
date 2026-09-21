@@ -1,0 +1,86 @@
+{
+  "name": "desktop-clock",
+  "productName": "Desktop Clock",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A lightweight always-on-top desktop world clock with switchable time zones",
+  "author": "xuyihan0207 <xuyihan0207@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xuyihan0207/desktop-clock.git"
+  },
+  "homepage": "https://github.com/xuyihan0207/desktop-clock",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "icons": "node tools/make-icons.js",
+    "dist:win": "electron-builder --win --publish never",
+    "dist:mac": "electron-builder --mac --publish never",
+    "dist": "electron-builder --win --mac --publish never"
+  },
+  "devDependencies": {
+    "electron": "^44.4.3",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.yihan.desktop-clock",
+    "productName": "Desktop Clock",
+    "copyright": "Copyright © 2026 xuyihan0207",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "asar": true,
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Desktop Clock",
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "${productName}-Portable-${version}.${ext}"
+    },
+    "mac": {
+      "icon": "build/icon.png",
+      "category": "public.app-category.utilities",
+      "darkModeSupport": true,
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "dmg": {
+      "title": "${productName} ${version}"
+    }
+  }
+}

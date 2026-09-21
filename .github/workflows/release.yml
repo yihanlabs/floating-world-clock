@@ -1,0 +1,101 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      draft:
+        description: 'Create the release as a draft'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # One platform failing should not throw away the other's artifacts.
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            script: dist:win
+            artifact: windows
+          - os: macos-14
+            script: dist:mac
+            artifact: macos
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate app icons
+        # Regenerated rather than trusted from the repo, so the committed
+        # build/icon.png and the shipped .ico/.icns can never drift apart.
+        run: npm run icons
+
+      - name: Build
+        # --publish never keeps electron-builder from trying to upload on its own;
+        # the release step below is the single source of truth for artifacts.
+        run: npm run ${{ matrix.script }} -- --publish never
+        env:
+          # Nothing is code-signed: no Apple Developer account, and no Windows
+          # certificate. Set CSC_IDENTITY_AUTO_DISCOVERY=false so electron-builder
+          # does not fail trying to find a signing identity on macOS.
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          # Only the distributables -- not win-unpacked/ or mac/ (hundreds of MB).
+          path: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.zip
+          if-no-files-found: error
+          retention-days: 7
+
+  release:
+    name: Publish release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Collect installers
+        run: |
+          mkdir -p release
+          find artifacts -type f \( -name '*.exe' -o -name '*.dmg' -o -name '*.zip' \) -exec mv {} release/ \;
+          echo '--- files to publish ---'
+          ls -lh release/
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          draft: ${{ inputs.draft || false }}
+          generate_release_notes: true
+          body: |
+            Download the build for your platform below.
+
+            **Windows** — run the `Setup` installer, or use the `Portable` build for a
+            single file with no installation.
+
+            **macOS** — these builds are **not code-signed or notarised**, so macOS will
+            refuse to open the app the first time. After dragging it to `/Applications`,
+            **right-click the app → Open** and confirm. This is only needed once.

@@ -1,0 +1,682 @@
+/* ==========================================================================
+   Desktop Clock -- light "research report" surface.
+   The window itself is transparent and frameless: the rounded card, its border
+   and its shadow are all drawn here, and .stage's padding reserves room so the
+   shadow is not clipped by the window edge.
+   ========================================================================== */
+
+:root {
+  --pad: 14px;
+  --card-width: 272px;
+
+  /* Driven by the opacity slider. */
+  --alpha: 1;
+
+  --accent: #1f5fbf;
+  --accent-soft: rgba(31, 95, 191, 0.08);
+  --accent-2: #0d7c73;
+
+  --ink: #0f172a;
+  --ink-2: #334155;
+  --muted: #64748b;
+  --faint: #94a3b8;
+
+  --line: rgba(15, 23, 42, 0.07);
+  --hair: rgba(15, 23, 42, 0.055);
+
+  --card-bg: rgba(255, 255, 255, var(--alpha));
+  --field-bg: rgba(241, 245, 249, calc(var(--alpha) * 0.85));
+  --raise-bg: rgba(255, 255, 255, var(--alpha));
+
+  --radius-card: 16px;
+  --radius-field: 8px;
+
+  --font: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI",
+    "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  overflow: hidden;
+  height: auto;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* A clock is not a document: no selection, no accidental text dragging. */
+  user-select: none;
+  cursor: default;
+}
+
+/* Reserves room for the card's shadow so the window edge never cuts it off. */
+.stage {
+  padding: var(--pad);
+  width: max-content;
+}
+
+.card {
+  width: var(--card-width);
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow:
+    0 6px 22px rgba(15, 23, 42, 0.16),
+    0 1px 2px rgba(15, 23, 42, 0.05);
+  overflow: hidden;
+  /* Whole card is a drag handle; interactive children opt out below. */
+  -webkit-app-region: drag;
+}
+
+/* --------------------------------------------------------------------------
+   Header
+   -------------------------------------------------------------------------- */
+
+.grip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 27px;
+  padding: 0 8px 0 15px;
+}
+
+.grip-title {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: var(--faint);
+  transition: color 0.18s ease;
+}
+
+.card:hover .grip-title {
+  color: var(--muted);
+}
+
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 21px;
+  height: 21px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--faint);
+  cursor: pointer;
+  /* Faint by default so the control is discoverable without adding clutter. */
+  opacity: 0.3;
+  transition: opacity 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+
+.card:hover .icon-btn,
+.card.panel-open .icon-btn,
+.icon-btn:focus-visible {
+  opacity: 1;
+}
+
+.icon-btn:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.card.panel-open .icon-btn {
+  color: var(--accent);
+}
+
+.ico-close {
+  display: none;
+}
+
+.card.panel-open .ico-gear {
+  display: none;
+}
+
+.card.panel-open .ico-close {
+  display: block;
+}
+
+/* --------------------------------------------------------------------------
+   Zone rows
+   -------------------------------------------------------------------------- */
+
+.zones {
+  padding-bottom: 2px;
+}
+
+.zone {
+  position: relative;
+  padding: 11px 15px 12px 17px;
+  transition: background 0.15s ease;
+}
+
+.zone + .zone {
+  border-top: 1px solid var(--hair);
+}
+
+.zone:hover {
+  background: rgba(31, 95, 191, 0.035);
+}
+
+/* Thin accent rule marking each row. */
+.zone::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 14px;
+  bottom: 15px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: 0.85;
+}
+
+.zone-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.zone-place {
+  font-size: 12.5px;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.zone-code {
+  font-weight: 650;
+  color: var(--ink);
+}
+
+.zone-country {
+  font-weight: 450;
+  color: var(--muted);
+}
+
+.zone-date {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  flex: none;
+  font-size: 11.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.day-chip {
+  font-size: 9.5px;
+  font-weight: 650;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: rgba(13, 124, 115, 0.1);
+  color: var(--accent-2);
+}
+
+.zone-time {
+  margin-top: 1px;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* --------------------------------------------------------------------------
+   Compact density
+   -------------------------------------------------------------------------- */
+
+.card.compact .zone {
+  padding: 7px 13px 8px 15px;
+}
+
+.card.compact .zone::before {
+  left: 6px;
+  top: 10px;
+  bottom: 11px;
+}
+
+.card.compact .zone-head {
+  font-size: 11px;
+}
+
+.card.compact .zone-place {
+  font-size: 11.5px;
+}
+
+.card.compact .zone-date {
+  font-size: 10.5px;
+}
+
+.card.compact .zone-time {
+  font-size: 22px;
+  letter-spacing: -0.3px;
+}
+
+/* --------------------------------------------------------------------------
+   Empty state
+   -------------------------------------------------------------------------- */
+
+.empty {
+  margin: 0;
+  padding: 14px 16px 18px;
+  font-size: 11.5px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.empty-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 10.5px;
+  color: var(--faint);
+}
+
+/* --------------------------------------------------------------------------
+   Settings panel
+   -------------------------------------------------------------------------- */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  /*
+   * Hard cap so opening the panel can never swallow half the desktop. Sized to fit
+   * the full control set with a few zones; beyond that the panel scrolls instead of
+   * growing the window.
+   */
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 10px 14px 12px;
+  border-top: 1px solid var(--line);
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+.field {
+  position: relative;
+}
+
+.search {
+  width: 100%;
+  padding: 6px 9px;
+  font-family: inherit;
+  font-size: 11.5px;
+  color: var(--ink);
+  background: var(--field-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-field);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.search::placeholder {
+  color: var(--faint);
+}
+
+.search:focus {
+  background: var(--raise-bg);
+  border-color: rgba(31, 95, 191, 0.45);
+  box-shadow: 0 0 0 3px rgba(31, 95, 191, 0.1);
+}
+
+.results {
+  position: absolute;
+  z-index: 10;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  max-height: 146px;
+  overflow-y: auto;
+  background: var(--raise-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-field);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14);
+}
+
+.results[hidden] {
+  display: none;
+}
+
+.result {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 9px;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.result:hover,
+.result.is-active {
+  background: var(--accent-soft);
+}
+
+.result-place {
+  color: var(--ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.result-tz {
+  flex: none;
+  font-size: 10px;
+  color: var(--faint);
+}
+
+.result-none {
+  padding: 7px 9px;
+  font-size: 11px;
+  color: var(--faint);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.chip {
+  padding: 3px 7px;
+  font-family: inherit;
+  font-size: 10px;
+  color: var(--ink-2);
+  background: var(--raise-bg);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.chip:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: rgba(31, 95, 191, 0.4);
+  background: var(--accent-soft);
+}
+
+.chip:disabled {
+  opacity: 0.42;
+  cursor: default;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 6px;
+  border-top: 1px solid var(--hair);
+}
+
+.section-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.manage {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 118px;
+  overflow-y: auto;
+}
+
+.manage-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--ink-2);
+}
+
+.manage-name {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.manage-code {
+  flex: none;
+  font-size: 10px;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.mini {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--muted);
+  background: var(--raise-bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.mini:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: rgba(31, 95, 191, 0.35);
+  background: var(--accent-soft);
+}
+
+.mini:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.mini.remove:hover {
+  color: #b91c1c;
+  border-color: rgba(185, 28, 28, 0.35);
+  background: rgba(185, 28, 28, 0.07);
+}
+
+.row-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--ink-2);
+}
+
+/* Toggle switch */
+.switch {
+  position: relative;
+  flex: none;
+  width: 32px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: #cbd5e1;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.28);
+  transition: transform 0.18s ease;
+}
+
+.switch[aria-checked="true"] {
+  background: var(--accent);
+}
+
+.switch[aria-checked="true"]::after {
+  transform: translateX(14px);
+}
+
+/* Segmented control */
+.seg {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--field-bg);
+  border-radius: var(--radius-field);
+}
+
+.seg button {
+  padding: 3px 10px;
+  font-family: inherit;
+  font-size: 10.5px;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.seg button[aria-pressed="true"] {
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--raise-bg);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.1);
+}
+
+/* Range slider */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1;
+  height: 4px;
+  margin: 0;
+  background: #e2e8f0;
+  border-radius: 2px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 1px 3px rgba(31, 95, 191, 0.4);
+  cursor: pointer;
+}
+
+input[type="range"]:focus-visible {
+  box-shadow: 0 0 0 3px rgba(31, 95, 191, 0.15);
+}
+
+#opacityValue {
+  flex: none;
+  min-width: 30px;
+  font-size: 10.5px;
+  color: var(--faint);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.actions {
+  flex-direction: row;
+  gap: 6px;
+}
+
+.ghost {
+  flex: 1;
+  padding: 5px 8px;
+  font-family: inherit;
+  font-size: 11px;
+  color: var(--ink-2);
+  background: var(--raise-bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.ghost:hover {
+  color: var(--accent);
+  border-color: rgba(31, 95, 191, 0.35);
+  background: var(--accent-soft);
+}
+
+.ghost.danger:hover {
+  color: #b91c1c;
+  border-color: rgba(185, 28, 28, 0.35);
+  background: rgba(185, 28, 28, 0.07);
+}
+
+/* --------------------------------------------------------------------------
+   Chrome opt-outs: anything interactive must leave the drag region, otherwise
+   the drag region swallows its clicks.
+   -------------------------------------------------------------------------- */
+
+.panel,
+.icon-btn,
+button,
+input,
+.results,
+.chip,
+.mini,
+.ghost,
+.switch,
+.seg {
+  -webkit-app-region: no-drag;
+}
+
+/* Slim scrollbars inside the panel. */
+.panel::-webkit-scrollbar,
+.manage::-webkit-scrollbar,
+.results::-webkit-scrollbar {
+  width: 6px;
+}
+
+.panel::-webkit-scrollbar-thumb,
+.manage::-webkit-scrollbar-thumb,
+.results::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.16);
+  border-radius: 3px;
+}
+
+.panel::-webkit-scrollbar-track,
+.manage::-webkit-scrollbar-track,
+.results::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
