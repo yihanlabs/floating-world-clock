@@ -62,7 +62,7 @@ function buildMenu(handlers) {
 function createTray(handlers) {
   tray = new Tray(buildImage());
   // An empty tooltip can make the icon invisible on Windows, so always set one.
-  tray.setToolTip('Floating World Clock · 世界时钟');
+  tray.setToolTip('Desktop Clock · 世界时钟');
   tray.on('double-click', () => handlers.onToggleVisible());
   refreshTray(handlers);
   return tray;
