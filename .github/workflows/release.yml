@@ -94,22 +94,20 @@ jobs:
           draft: ${{ inputs.draft || false }}
           generate_release_notes: true
           body: |
-            Pick the file for your platform from the assets below.
+            从下方附件中选择对应平台的文件。
 
-            | Platform | File | Notes |
+            | 平台 | 文件 | 说明 |
             |---|---|---|
-            | Windows | `...-Setup-<version>.exe` | Installer. Per-user, no admin rights needed. |
-            | Windows | `...-Portable-<version>.exe` | Single file, no installation. |
-            | macOS | `...-arm64.dmg` | Apple Silicon (M-series). |
-            | macOS | `...-<version>.dmg` | Intel. |
+            | Windows | `...-Setup-<version>.exe` | 安装包。按当前用户安装，无需管理员权限。 |
+            | Windows | `...-Portable-<version>.exe` | 免安装单文件。 |
+            | macOS | `...-arm64.dmg` | Apple Silicon（M 系列芯片）。 |
+            | macOS | `...-<version>.dmg` | Intel 芯片。 |
 
-            Not sure which Mac you have? Apple menu → About This Mac. If the window
-            shows a **Chip** line (an M-series chip), take the `arm64` build. If it
-            shows a **Processor** line naming an Intel Core, take the other one.
+            **不确定自己的 Mac 是哪种？** 点左上角苹果菜单 → 关于本机。窗口里显示「芯片」一行
+            （M 系列芯片）就选 `arm64` 那个；显示「处理器」一行且是 Intel Core，就选另一个。
 
-            **macOS first launch** — these builds are **not code-signed or notarised**,
-            so macOS refuses to open the app the first time. Drag it to `/Applications`,
-            then **right-click the app → Open** and confirm. Only needed once.
+            **macOS 首次打开** —— 这两个构建**未签名、未公证**，macOS 首次会拒绝打开。
+            把应用拖进 `/Applications`，然后**右键点击应用 → 打开**并确认。只需做一次。
 
-            **Windows SmartScreen** — the installer is unsigned, so you may see
-            "Windows protected your PC". Choose *More info* → *Run anyway*.
+            **Windows SmartScreen** —— 安装包未签名，可能提示「Windows 已保护你的电脑」。
+            点 *更多信息* → *仍要运行*。
