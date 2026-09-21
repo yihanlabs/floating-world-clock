@@ -4,13 +4,13 @@
   "version": "1.0.0",
   "private": true,
   "description": "A lightweight always-on-top desktop world clock with switchable time zones",
-  "author": "xuyihan0207 <xuyihan0207@gmail.com>",
+  "author": "Yihan Labs",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/xuyihan0207/floating-world-clock.git"
+    "url": "https://github.com/yihanlabs/floating-world-clock.git"
   },
-  "homepage": "https://github.com/xuyihan0207/floating-world-clock",
+  "homepage": "https://github.com/yihanlabs/floating-world-clock",
   "main": "src/main/main.js",
   "scripts": {
     "start": "electron .",
@@ -26,7 +26,7 @@
   "build": {
     "appId": "com.yihan.desktop-clock",
     "productName": "Floating World Clock",
-    "copyright": "Copyright © 2026 xuyihan0207",
+    "copyright": "Copyright © 2026 Yihan Labs",
     "directories": {
       "output": "dist",
       "buildResources": "build"
