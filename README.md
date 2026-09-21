@@ -35,7 +35,7 @@ UI is a few hundred lines of vanilla code.
 
 ## Download
 
-Grab the latest build from the [**Releases**](https://github.com/xuyihan0207/floating-world-clock/releases) page.
+Grab the latest build from the [**Releases**](https://github.com/yihanlabs/floating-world-clock/releases) page.
 
 | Platform | File | Notes |
 |---|---|---|
