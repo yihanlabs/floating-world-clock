@@ -47,9 +47,12 @@ jobs:
         run: npm run icons
 
       - name: Build
-        # --publish never keeps electron-builder from trying to upload on its own;
-        # the release step below is the single source of truth for artifacts.
-        run: npm run ${{ matrix.script }} -- --publish never
+        # The npm scripts already pass --publish never. Do NOT add the flag here
+        # as well: electron-builder would then see --publish twice, parse it as
+        # the array ["never","never"], and its guard `publish !== "never"` would
+        # evaluate true -- turning publishing ON and failing the build with
+        # "GitHub Personal Access Token is not set".
+        run: npm run ${{ matrix.script }}
         env:
           # Nothing is code-signed: no Apple Developer account, and no Windows
           # certificate. Set CSC_IDENTITY_AUTO_DISCOVERY=false so electron-builder
